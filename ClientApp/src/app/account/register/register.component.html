@@ -122,7 +122,9 @@
         </div>
 
         <div class="form-floatin" *ngIf="errorMessages.length > 0">
-          <app-validation-messages [errormessages]="errorMessages"></app-validation-messages>
+          <app-validation-messages
+            [errormessages]="errorMessages"
+          ></app-validation-messages>
         </div>
         <div class="d-grid mt-4 px-1">
           <button class="btn btn-lg btn-info" type="submit">

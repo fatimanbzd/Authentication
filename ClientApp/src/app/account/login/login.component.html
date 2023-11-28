@@ -1,27 +1,57 @@
 <div class="d-flex justify-content">
-    <div class="col-12 col-lg-5">
-        <main class="form-signin">
-            <form>
-                <div class="text-center mb-4">
-                    <h3 class="mb-3 font-weight-normal">Login</h3>
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="email" class="form-control" placeholder="Email">
-                    <label for="email">Email</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="password" class="form-control" placeholder="Password">
-                    <label for="Password">Password</label>
-                </div>
-                <div class="d-grid mt-4 px-1">
-                    <button class="btn btn-lg btn-info" type="submit">Log In</button>
-                </div>
-                <div class="mt-4 text-center">
-                    <a class="btn btn-link">
-                        <h6>forget username or password</h6>
-                    </a>
-                </div>
-            </form>
-        </main>
-    </div>
+  <div class="col-12 col-lg-5">
+    <main class="form-signin">
+      <form [formGroup]="loginForm" autocomplete="off" (submit)="login()">
+        <div class="text-center mb-4">
+          <h3 class="mb-3 font-weight-normal">Login</h3>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="email"
+            class="form-control"
+            placeholder="Username (email)"
+            formControlName="username"
+            [class.is-invalid]="submitted && loginForm.get('username')?.errors"
+          />
+          <label for="username">Username</label>
+          <span
+            class="text-danger"
+            *ngIf="submitted && loginForm.get('username')?.hasError('required')"
+          >
+            Username is required
+          </span>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Password"
+            formControlName="password"
+            [class.is-invalid]="submitted && loginForm.get('password')?.errors"
+          />
+          <label for="Password">Password</label>
+          <span
+            class="text-danger"
+            *ngIf="submitted && loginForm.get('password')?.hasError('required')"
+          >
+            Password is required
+          </span>
+        </div>
+        <div class="form-floatin" *ngIf="errorMessages.length > 0">
+          <app-validation-messages
+            [errormessages]="errorMessages"
+          ></app-validation-messages>
+        </div>
+
+        <div class="d-grid mt-4 px-1">
+          <button class="btn btn-lg btn-info" type="submit">Log In</button>
+        </div>
+        <div class="mt-4 text-center">
+          <a class="btn btn-link">
+            <h6>forget username or password</h6>
+          </a>
+        </div>
+      </form>
+    </main>
+  </div>
 </div>
