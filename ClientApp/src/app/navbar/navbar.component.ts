@@ -9,5 +9,7 @@ import { AccountService } from '../account/account.service';
 export class NavbarComponent {
   constructor(protected accountService: AccountService) {}
 
-  logout() {}
+  logout() {
+    this.accountService.logout();
+  }
 }

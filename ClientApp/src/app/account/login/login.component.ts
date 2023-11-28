@@ -3,6 +3,8 @@ import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { AccountService } from '../account.service';
 import { ILoginModel } from 'src/app/shared/models/login';
 import { Router } from '@angular/router';
+import { take } from 'rxjs';
+import { IUserModel } from 'src/app/shared/models/user';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +19,14 @@ export class LoginComponent implements OnInit , OnDestroy{
 
   constructor(private fb: FormBuilder,
     private accountService: AccountService,
-  private router: Router) { }
+    private router: Router) {
+    accountService.user$.pipe(take(1)).subscribe({
+      next: (user: IUserModel | null) => {        
+        if (user)
+          router.navigateByUrl('/');
+      }
+    })    
+   }
   
   ngOnInit(): void {
     this.initForm();
