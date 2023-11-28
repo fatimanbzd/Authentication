@@ -58,9 +58,10 @@ namespace API.Controllers
             };
 
             var result = await _userManager.CreateAsync(usrToAdd, register.Password);
-            if (!result.Succeeded) return BadRequest(result.Errors);
 
-            return Ok("you register successfully.");
+            return !result.Succeeded
+                ? BadRequest(result.Errors)
+                : Ok(new JsonResult(new {title="Account Create", message= "\"you register successfully. you can login\"" }));
         }
 
         [Authorize]
