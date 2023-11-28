@@ -1,9 +1,14 @@
 ﻿using API.DTOs.Account;
 using API.Models;
 using API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -24,7 +29,7 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public async  Task<ActionResult<UserDto>> Login(LoginDto model)
+        public async Task<ActionResult<UserDto>> Login(LoginDto model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null) return Unauthorized("Invalid Username or Password");
@@ -38,6 +43,34 @@ namespace API.Controllers
 
         }
 
+        [HttpPost("register")]
+        public async Task<ActionResult> Register(RegisterDto register)
+        {
+            if (await CheckEmailExistsAsync(register.Email)) return BadRequest($"An existing acount is using {register.Email}. please try with another email");
+
+            var usrToAdd = new User
+            {
+                FirstName = register.FirstName.ToLower(),
+                LastName = register.LastName.ToLower(),
+                UserName = register.Email.ToLower(),
+                Email = register.Email.ToLower(),
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(usrToAdd, register.Password);
+            if (!result.Succeeded) return BadRequest(result.Errors);
+
+            return Ok("you register successfully.");
+        }
+
+        [Authorize]
+        [HttpGet("refresh-user-token")]
+        public async Task<ActionResult<UserDto>> RefreshUserToken()
+        {
+            User user = await _userManager.FindByNameAsync(User.FindFirst(ClaimTypes.Email)?.Value);
+            return CreateApplicationUserDto(user);
+        }
+
         #region private Helper Methods
         private UserDto CreateApplicationUserDto(User user)
         {
@@ -47,6 +80,11 @@ namespace API.Controllers
                 LastName = user.LastName,
                 JWT = _jwtService.CreateJWT(user),
             };
+        }
+
+        private async Task<bool> CheckEmailExistsAsync(string email)
+        {
+            return await _signInManager.UserManager.Users.AnyAsync(x => x.Email == email.ToLower());
         }
         #endregion
     }

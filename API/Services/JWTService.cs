@@ -30,14 +30,14 @@ namespace API.Services
             new Claim(ClaimTypes.Surname,user.LastName),
             };
 
-            var creadential = new SigningCredentials(_jwtKey, SecurityAlgorithms.HmacSha512Signature);
+            var creadential = new SigningCredentials(_jwtKey, SecurityAlgorithms.HmacSha256Signature);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
 
                 Subject = new ClaimsIdentity(userClaims),
                 Expires = DateTime.UtcNow.AddDays(int.Parse(_config["JWT:ExpiresInDays"])),
                 SigningCredentials = creadential,
-                Issuer = _config["JWT:ISSuer"]
+                Issuer = _config["JWT:Issuer"]
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
